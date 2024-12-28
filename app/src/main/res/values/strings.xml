@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">DriveEase</string>
+    <string name="welcome">Welcome</string>
+    <string name="sign_up_to_continue">Sign up to continue</string>
+    <string name="password">Password</string>
+    <string name="email_address">Email address</string>
+    <string name="name">Name</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="sign_up">SIGN UP</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="sign_upp">Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="sign_in_to_continue">Sign in to continue</string>
+    <string name="if_you_are_a_new_user">If you are a new user?</string>
+    <string name="pothole_preview">Pothole preview</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="current_location">📍 Current Location</string>
+    <string name="update">Update</string>
+    <string name="describe_the_pothole">Describe the pothole</string>
+    <string name="severity_level">Severity Level</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="or">OR</string>
+    <string name="sign_in_with_googlee">Sign in with Google</string>
+    <string name="default_web_client_id">YOUR_CLIENT_ID</string>
+
+</resources>

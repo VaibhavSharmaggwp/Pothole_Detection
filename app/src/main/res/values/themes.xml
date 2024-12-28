@@ -1,0 +1,25 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DriveEase" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">#2196F3</item>
+        <item name="colorPrimaryVariant">#2196F3</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">#80CBC4</item>
+        <item name="colorSecondaryVariant">#00796B</item>
+        <item name="colorOnSecondary">@color/black</item>
+    </style>
+
+    <style name="MyProgressBar" parent="Theme.MaterialComponents">
+        <item name="colorSecondary">#9400d3</item>
+    </style>
+
+    <style name="Theme.DriveEase" parent="Base.Theme.DriveEase" />
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="postSplashScreenTheme">@style/Base.Theme.DriveEase</item>
+    </style>
+</resources>
