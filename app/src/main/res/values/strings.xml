@@ -24,5 +24,26 @@
     <string name="or">OR</string>
     <string name="sign_in_with_googlee">Sign in with Google</string>
     <string name="default_web_client_id">YOUR_CLIENT_ID</string>
+    <string name="send_otp" />
+    <string name="sign_in_with_phone">Sign in with Phone</string>
+    <string name="enter_phone_number">Enter Phone Number</string>
+    <string name="my_map_api_key">AIzaSyBFB-f15GLir-GZ67PfwDHx1fZw3W1Ep8Q</string>
+    <string name="submit_report">Submit Report</string>
+    <string name="review" />
+    <string name="review_">Review</string>
+    <string name="submit">SUBMIT</string>
+    <string name="report_image">Report image</string>
+    <string name="sign_up_admin">Sign Up</string>
+    <string name="new_admin">New Admin?</string>
+    <string name="admin_password">Admin Password</string>
+    <string name="sign_in_admin">Sign In</string>
+    <string name="sign_in_with_google_admin">Sign in with Google</string>
+    <string name="OR">OR</string>
+    <string name="admin_email">Admin Email</string>
+    <string name="welcome_admin">Welcome</string>
+    <string name="welcome_admin_sign_up">Welcome</string>
+    <string name="sign_up_to_continue_admin">Sign Up to Continue</string>
+    <string name="full_name">Full Name</string>
+    <string name="sign_up_admin__">Sign Up</string>
 
 </resources>

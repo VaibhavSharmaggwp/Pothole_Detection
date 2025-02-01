@@ -21,6 +21,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.GoogleAuthProvider
+import android.view.animation.AnimationUtils
+import android.widget.ImageView
+
 
 
 class SignActivity : AppCompatActivity() {
@@ -35,6 +38,10 @@ class SignActivity : AppCompatActivity() {
         // Initialize the correct binding for SignActivity
         binding = ActivitySignBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Load and start the pulse animation
+        val pulseAnimation = AnimationUtils.loadAnimation(this, R.anim.pulse_animation)
+        findViewById<ImageView>(R.id.safetyIcon).startAnimation(pulseAnimation)
 
         auth = FirebaseAuth.getInstance()
 
@@ -57,10 +64,18 @@ class SignActivity : AppCompatActivity() {
 
         val signUpText = binding.signUpText
 
+        val adminLoginText = binding.adminLogin
+
         signUpText.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
             startActivity(intent)
         }
+
+        adminLoginText.setOnClickListener{
+            val intent = Intent(this, Admin_Signin::class.java)
+            startActivity(intent)
+        }
+
 
         signInBtn.setOnClickListener {
             signInProgressBar.visibility = View.VISIBLE
@@ -137,7 +152,7 @@ class SignActivity : AppCompatActivity() {
             }
 
         }else{
-             Toast.makeText(this, task.exception.toString(), Toast.LENGTH_LONG).show()
+            Toast.makeText(this, task.exception.toString(), Toast.LENGTH_LONG).show()
         }
     }
 

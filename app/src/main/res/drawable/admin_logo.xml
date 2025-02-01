@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background circle -->
+    <item>
+        <shape>
+            <solid android:color="#FF4081" /> <!-- Pink background -->
+            <corners android:radius="60dp"/>
+            <size android:width="120dp" android:height="120dp"/>
+        </shape>
+    </item>
+
+    <!-- Center gear icon -->
+    <item android:right="10dp" android:left="10dp" android:top="10dp" android:bottom="10dp">
+        <vector android:width="100dp" android:height="100dp" android:viewportWidth="100" android:viewportHeight="100">
+            <path
+                android:fillColor="#FFFFFF"
+                android:pathData="M50,10 L70,30 L90,50 L70,70 L50,90 L30,70 L10,50 L30,30 Z" />
+        </vector>
+    </item>
+
+    <!-- A smaller colorful checkmark -->
+    <item android:right="15dp" android:left="15dp" android:top="15dp" android:bottom="15dp">
+        <vector android:width="40dp" android:height="40dp" android:viewportWidth="40" android:viewportHeight="40">
+            <path
+                android:fillColor="#FFC107"
+                android:pathData="M10,20 L15,25 L30,10"/>
+        </vector>
+    </item>
+</layer-list>

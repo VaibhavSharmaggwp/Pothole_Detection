@@ -20,5 +20,7 @@
     <color name="divider">#1A000000</color>
     <color name="error">#D32F2F</color>
     <color name="background_light">#F5F5F5</color>
+    <color name="brighter_hint_color">#000000</color> <!-- Bright white -->
+
 
 </resources>

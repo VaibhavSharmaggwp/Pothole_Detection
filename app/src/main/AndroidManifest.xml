@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <!-- Camera Feature -->
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
-
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- Permission to access the gallery (external storage) -->
+        android:required="false" /> <!-- Internet Permission -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- Storage Permissions -->
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-    <!-- Permission to access the camera -->
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32"
+        tools:ignore="ScopedStorage" /> <!-- Camera Permission -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- Location Permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
-
 
     <application
         android:allowBackup="true"
@@ -28,30 +28,51 @@
         android:theme="@style/Theme.DriveEase"
         tools:targetApi="31">
         <activity
-            android:name=".Pothole_main"
+            android:name=".AdminPanel"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".pot_hole_main_activity"-->
-<!--            android:exported="false" />-->
-<!--        <activity-->
-<!--            android:name=".Pot_Hole_Main_page"-->
-<!--            android:exported="false" /> -->
-        <!-- Set SignActivity as the launch activity -->
         <activity
-            android:name=".SignActivity"
-            android:exported="true">
+            android:name=".Admin_SignUp"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_Signin"
+            android:exported="false" />
+        <activity
+            android:name=".ReportActivity"
+            android:exported="false" /> <!-- Api key for google maps -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/my_map_api_key" /> <!-- Splash Screen Activity (Launcher) -->
+        <activity
+            android:name=".SplashScrren"
+            android:exported="true"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity> <!-- Sign-in Activity -->
+        <activity
+            android:name=".SignActivity"
+            android:exported="true" /> <!-- Sign-up Activity -->
         <activity
             android:name=".SignUpActivity"
-            android:exported="false" />
+            android:exported="false" /> <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
-            android:exported="true" />
+            android:exported="true" /> <!-- Pothole Main Activity -->
+        <activity
+            android:name=".Pothole_main"
+            android:exported="true" /> <!-- FileProvider for handling images -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>
