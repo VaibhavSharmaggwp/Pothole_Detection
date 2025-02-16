@@ -45,5 +45,23 @@
     <string name="sign_up_to_continue_admin">Sign Up to Continue</string>
     <string name="full_name">Full Name</string>
     <string name="sign_up_admin__">Sign Up</string>
+    <string name="pothole_management">Pothole Management</string>
+    <string name="total_officers">Total Officers</string>
+    <string name="_0">0</string>
+    <string name="total_reports">Total Reports</string>
+    <string name="_0_">0</string>
+    <string name="navigation_drawer_open">Open Navigation Drawer</string>
+    <string name="navigation_drawer_close">Close Navigation Drawer</string>
+
+    <string name="_0__">0</string>
+    <string name="total_workers">Total Workers</string>
+    <string name="pothole_resolution_monitoring">Pothole Resolution Monitoring</string>
+    <string name="go_to_compose">Go to Compose</string>
+    <string-array name="roles_array">
+        <item>Officer</item>
+        <item>Sub-divisional Officer (SDO)</item>
+        <item>Worker</item>
+    </string-array>
+    <string name="title_activity_officer_compose">OfficerComposeActivity</string>
 
 </resources>

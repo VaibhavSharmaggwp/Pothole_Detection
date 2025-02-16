@@ -177,8 +177,6 @@
                 app:strokeColor="#E0E0E0"
                 app:strokeWidth="1dp"
                 android:layout_marginBottom="12dp"/>
-
-
         </LinearLayout>
     </LinearLayout>
 
@@ -188,48 +186,49 @@
         android:orientation="horizontal"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="32dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:weightSum="4">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/if_you_are_a_new_user"
             android:textStyle="bold"
-            android:layout_gravity="center"
             android:textSize="14sp"
-            android:textColor="#FFFFFF"/>
+            android:textColor="#FFFFFF"
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/signUpText"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/sign_upp"
-            android:layout_gravity="center"
             android:textColor="#FFD700"
             android:textStyle="bold"
             android:textSize="15sp"
-            android:layout_marginStart="15dp"/>
+            android:gravity="center"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Click here for"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
             android:textSize="15sp"
-            android:layout_gravity="center"
-            android:layout_marginStart="15dp"/>
+            android:gravity="center"/>
 
         <TextView
             android:id="@+id/admin_login"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="Admin Login"
             android:textColor="#FFD700"
             android:textStyle="bold"
             android:textSize="15sp"
-            android:layout_marginStart="15dp"/>
-
+            android:gravity="center"/>
     </LinearLayout>
-
 </RelativeLayout>

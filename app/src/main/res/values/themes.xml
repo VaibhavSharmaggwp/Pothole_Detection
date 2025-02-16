@@ -10,6 +10,7 @@
         <item name="colorSecondary">#80CBC4</item>
         <item name="colorSecondaryVariant">#00796B</item>
         <item name="colorOnSecondary">@color/black</item>
+
     </style>
 
     <style name="MyProgressBar" parent="Theme.MaterialComponents">
@@ -22,7 +23,6 @@
         <item name="windowSplashScreenBackground">@color/white</item>
         <item name="postSplashScreenTheme">@style/Base.Theme.DriveEase</item>
     </style>
-
 
 
 </resources>

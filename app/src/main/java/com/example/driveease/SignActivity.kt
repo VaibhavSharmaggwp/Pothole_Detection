@@ -23,9 +23,6 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.GoogleAuthProvider
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
-
-
-
 class SignActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"

@@ -3,6 +3,7 @@ package com.example.driveease
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.driveease.databinding.ActivityAdminSigninBinding
@@ -11,15 +12,18 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class Admin_Signin : AppCompatActivity() {
     private lateinit var binding: ActivityAdminSigninBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
-    private val RC_SIGN_IN = 9001  // Request code for Google Sign-In
+    private val RC_SIGN_IN = 9001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,115 +32,138 @@ class Admin_Signin : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // Initialize Google Sign-In client
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))  // Ensure this matches your Firebase config
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions)
 
-        // Sign In button click
         binding.adminSignInBtn.setOnClickListener {
             val email = binding.adminEmail.text.toString().trim()
             val password = binding.adminPassword.text.toString().trim()
-
-            if (validateInputs(email, password)) {
-                signInWithEmailPassword(email, password)
-            }
+            if (validateInputs(email, password)) signInWithEmailPassword(email, password)
         }
 
-        // Google Sign-In button click
-        binding.adminGoogleSignInBtn.setOnClickListener {
-            signInWithGoogle()
-        }
-
-        // Redirect to Sign-Up page
+        binding.adminGoogleSignInBtn.setOnClickListener { signInWithGoogle() }
         binding.adminSignUpText.setOnClickListener {
-            val intent = Intent(this, Admin_SignUp::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, Admin_SignUp::class.java))
         }
     }
 
-    // Sign in with email and password
     private fun signInWithEmailPassword(email: String, password: String) {
-        binding.adminSignInProgressBar.visibility = android.view.View.VISIBLE
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                binding.adminSignInProgressBar.visibility = android.view.View.GONE
-                if (task.isSuccessful) {
-                    // Successfully signed in
-                    Toast.makeText(this, "Sign-in successful", Toast.LENGTH_SHORT).show()
-                    // Redirect to admin panel or next screen
-                    val intent = Intent(this, AdminPanel::class.java)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    // Sign-in failed
-                    Toast.makeText(this, task.exception?.message, Toast.LENGTH_SHORT).show()
-                }
+        binding.adminSignInProgressBar.visibility = View.VISIBLE
+        auth.signInWithEmailAndPassword(email, password).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                checkUserAccess(auth.currentUser?.uid ?: "")
+            } else {
+                handleError(task.exception?.message)
             }
+        }
     }
 
-    // Google Sign-In functionality
     private fun signInWithGoogle() {
-        val signInIntent = googleSignInClient.signInIntent
-        startActivityForResult(signInIntent, RC_SIGN_IN)
+        startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
     }
 
-    // Handle the result of Google Sign-In
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == RC_SIGN_IN) {
-            val task: Task<GoogleSignInAccount> = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
-                val account = task.getResult(ApiException::class.java)
-                firebaseAuthWithGoogle(account)
+                val account = GoogleSignIn.getSignedInAccountFromIntent(data).getResult(ApiException::class.java)
+                account?.let { firebaseAuthWithGoogle(it) }
             } catch (e: ApiException) {
-                Toast.makeText(this, "Google sign-in failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                handleError("Google sign-in failed: ${e.message}")
             }
         }
     }
 
-    // Firebase Authentication with Google
-    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount?) {
-        if (account != null) {
-            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            auth.signInWithCredential(credential)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        Toast.makeText(this, "Google sign-in successful", Toast.LENGTH_SHORT).show()
-                        // Redirect to admin panel or next screen
-                        val intent = Intent(this, AdminPanel::class.java)
-                        startActivity(intent)
-                        finish()
-                    } else {
-                        Toast.makeText(this, task.exception?.message, Toast.LENGTH_SHORT).show()
-                    }
-                }
-        } else {
-            Toast.makeText(this, "Google sign-in failed: Account is null", Toast.LENGTH_SHORT).show()
+    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+        auth.signInWithCredential(credential).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                checkUserAccess(auth.currentUser?.uid ?: "")
+            } else {
+                handleError(task.exception?.message)
+            }
         }
     }
 
-    // Input Validation
+    private fun checkUserAccess(uid: String) {
+        val potholeReportsRef = FirebaseDatabase.getInstance().getReference("pothole_reports")
+
+        // Step 1: Check if user exists in "pothole_reports" (Regular user)
+        potholeReportsRef.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    // If the user exists in pothole_reports, they are a regular user
+                    auth.signOut()
+                    googleSignInClient.signOut()
+                    Toast.makeText(
+                        this@Admin_Signin,
+                        "⛔ You cannot access the admin panel as a regular user.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return
+                }
+
+                // Step 2: If not in pothole_reports, proceed to check if they are an admin
+                val adminRef = FirebaseDatabase.getInstance().getReference("admins")
+                adminRef.child(uid).addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        binding.adminSignInProgressBar.visibility = View.GONE
+                        if (snapshot.exists()) {
+                            val role = snapshot.child("role").value.toString() // Fetch role
+
+                            // Redirect to RoleAssignment and pass the role
+                            startActivity(Intent(this@Admin_Signin, RoleAssignment::class.java).apply {
+                                putExtra("LOGIN_TYPE", "ADMIN")
+                                putExtra("USER_ROLE", role) // Pass the role
+                                putExtra("USERNAME", snapshot.child("username").value.toString()) // Pass username
+                            })
+                            finish()
+                        } else {
+                            auth.signOut()
+                            googleSignInClient.signOut()
+                            Toast.makeText(
+                                this@Admin_Signin,
+                                "⛔ You don't have admin privileges",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        binding.adminSignInProgressBar.visibility = View.GONE
+                        handleError("Database error: ${error.message}")
+                    }
+                })
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                binding.adminSignInProgressBar.visibility = View.GONE
+                handleError("Database error: ${error.message}")
+            }
+        })
+    }
+
+
     private fun validateInputs(email: String, password: String): Boolean {
+        var valid = true
         if (TextUtils.isEmpty(email)) {
-            binding.adminEmailLayout.error = "Email is required"  // Set error on TextInputLayout
-            binding.adminEmailLayout.isErrorEnabled = true   // Enable the error state
-            return false
-        } else {
-            binding.adminEmailLayout.isErrorEnabled = false  // Disable error state if input is valid
-        }
+            binding.adminEmailLayout.error = "Email required"
+            valid = false
+        } else binding.adminEmailLayout.isErrorEnabled = false
 
         if (TextUtils.isEmpty(password)) {
-            binding.adminPasswordLayout.error = "Password is required"  // Set error on TextInputLayout
-            binding.adminPasswordLayout.isErrorEnabled = true   // Enable the error state
-            return false
-        } else {
-            binding.adminPasswordLayout.isErrorEnabled = false  // Disable error state if input is valid
-        }
+            binding.adminPasswordLayout.error = "Password required"
+            valid = false
+        } else binding.adminPasswordLayout.isErrorEnabled = false
 
-        return true
+        return valid
+    }
+
+    private fun handleError(message: String?) {
+        binding.adminSignInProgressBar.visibility = View.GONE
+        Toast.makeText(this, message ?: "Authentication failed", Toast.LENGTH_LONG).show()
     }
 }
