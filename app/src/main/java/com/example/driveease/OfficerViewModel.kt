@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
 
-class OfficerViewModel: ViewModel() {
+class OfficerViewModel : ViewModel() {
     private val database = Firebase.database
     private val _reports = MutableStateFlow<List<PotholeReport>>(emptyList())
     private val _roleCounts = MutableStateFlow<RoleCounts?>(null)
@@ -31,11 +31,24 @@ class OfficerViewModel: ViewModel() {
                     val report = reportSnapshot.getValue(PotholeReport::class.java)
                     report?.let {
                         // Set the Firebase key as the report ID and status to "in-progress"
-                        val reportWithId = it.copy(id = reportSnapshot.key ?: "", status = "in-progress")
-                        reportsList.add(reportWithId)
+                        if (it.latitude != 0.0 && it.longitude != 0.0 && it.imageUrl?.isNotEmpty() == true){
+                            // Set the Firebase key as the report ID and status to "in-progress"
+                            val reportWithId = it.copy(id = reportSnapshot.key ?: "", status = "in-progress")
+                            reportsList.add(reportWithId)
+                        }
+
+
                     }
                 }
-                _reports.value = reportsList.sortedByDescending { it.severity }
+                // Sort reports by severity: High → Medium → Low → Not Specified
+                _reports.value = reportsList.sortedWith(compareByDescending<PotholeReport> { report ->
+                    when (report.severity.lowercase(Locale.ROOT)) {
+                        "high" -> 3
+                        "medium" -> 2
+                        "low" -> 1
+                        else -> 0 // Not Specified or any other value
+                    }
+                })
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -56,21 +69,24 @@ class OfficerViewModel: ViewModel() {
         })
     }
 
+    // Calculate total workers deployed based on report severity
     fun calculateWorkersDeployed(): Int {
-        val availableWorkers = _roleCounts.value?.workers ?: 0
         var requiredWorkers = 0
-
         for (report in _reports.value) {
-            val severity = report.severity.toLowerCase(Locale.ROOT)
+            val severity = report.severity.lowercase(Locale.ROOT)
             when (severity) {
                 "high" -> requiredWorkers += 3
                 "medium" -> requiredWorkers += 2
-                else -> requiredWorkers += 1
+                "low" -> requiredWorkers +=1
+                else -> requiredWorkers += 0 
             }
         }
+        return requiredWorkers
+    }
 
-        // Ensure the required workers do not exceed the available workers
-        return minOf(requiredWorkers, availableWorkers)
+    // Get total available workers (not deployed, but total in database)
+    fun getTotalAvailableWorkers(): Int {
+        return _roleCounts.value?.workers ?: 0
     }
 }
 
@@ -79,3 +95,4 @@ data class RoleCounts(
     val sdo: Int = 0,
     val workers: Int = 0
 )
+

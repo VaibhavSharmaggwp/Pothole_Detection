@@ -53,6 +53,8 @@ class RoleAssignment : AppCompatActivity() {
         finish()
     }
 
+
+
     private fun validateRoleAndProceed(role: String) {
         val adminRef = FirebaseDatabase.getInstance().getReference("admins").child(auth.currentUser!!.uid)
         adminRef.get().addOnSuccessListener { snapshot ->
@@ -69,16 +71,36 @@ class RoleAssignment : AppCompatActivity() {
         }
     }
 
-    private fun assignRoleToUser(role: String) {
+    // Assign Role and Store User Details
+    private fun assignRoleToUser(role: String){
         val adminRef = FirebaseDatabase.getInstance().getReference("admins").child(auth.currentUser!!.uid)
+        // Set the current_role for the user
         adminRef.child("current_role").setValue(role).addOnSuccessListener {
-            updateRoleCount(role)
-            navigateToAdminPanel()
+            // Retrieve all user details after setting the role
+            adminRef.get().addOnSuccessListener {snapshot->
+                val userDetails = snapshot.value as Map<*, *>?
+                if(userDetails != null){
+                    // Store user details under rolesAssigned/{role}/{userId}
+                    val roleAssignedRef = FirebaseDatabase.getInstance()
+                        .getReference("admins/rolesAssigned/$role/${auth.currentUser!!.uid}")
+                    roleAssignedRef.setValue(userDetails).addOnSuccessListener {
+                        updateRoleCount(role)
+                        navigateToAdminPanel()
+                    }.addOnFailureListener{
+                        showToast("Failed to store role details")
+                    }
+                }else{
+                    showToast("User details not found")
+                }
+            }.addOnFailureListener{
+                showToast("Failed to retrieve user details")
+            }
         }.addOnFailureListener {
             showToast("Failed to assign role")
         }
     }
 
+    // Update Role count
     private fun updateRoleCount(role: String) {
         roleCountRef.child(role).get().addOnSuccessListener { snapshot ->
             val count = snapshot.getValue(Int::class.java) ?: 0

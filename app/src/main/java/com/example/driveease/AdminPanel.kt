@@ -52,6 +52,7 @@ class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
             }
             binding.navigationView.menu.findItem(R.id.nav_sdo).itemId -> {
                 Toast.makeText(this, "SDO Selected", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, SDOScreen::class.java))
             }
             binding.navigationView.menu.findItem(R.id.nav_worker).itemId -> {
                 Toast.makeText(this, "Worker Selected", Toast.LENGTH_SHORT).show()
@@ -85,10 +86,22 @@ class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
             }
         })
 
-        // Listen for reports count
-        reportsListener = reportsRef.addValueEventListener(object : ValueEventListener {
+        // Listen for reports count, excluding invalid reports
+        reportsListener = reportsRef.addValueEventListener(object: ValueEventListener{
             override fun onDataChange(snapshot: DataSnapshot) {
-                binding.dashboardReportsCount.text = snapshot.childrenCount.toString()
+                var validCount = 0
+                for(child in snapshot.children){
+                    // Retrieve field values with default fallbacks
+                    val latitude = child.child("latitude").getValue(Double::class.java) ?: 0.0
+                    val longitude = child.child("longitude").getValue(Double::class.java) ?: 0.0
+                    val imageUrl = child.child("imageUrl").getValue(String::class.java) ?: ""
+
+                    // Check if the report is valid
+                    if(latitude != 0.0 && longitude != 0.0 && imageUrl.isNotEmpty()){
+                        validCount++
+                    }
+                }
+                binding.dashboardReportsCount.text = validCount.toString()
             }
 
             override fun onCancelled(error: DatabaseError) {

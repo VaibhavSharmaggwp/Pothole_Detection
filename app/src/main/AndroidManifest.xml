@@ -29,6 +29,9 @@
         android:theme="@style/Theme.DriveEase"
         tools:targetApi="31">
         <activity
+            android:name=".SDOScreen"
+            android:exported="false" />
+        <activity
             android:name=".OfficerComposeActivity"
             android:exported="false"
             android:label="@string/title_activity_officer_compose"
