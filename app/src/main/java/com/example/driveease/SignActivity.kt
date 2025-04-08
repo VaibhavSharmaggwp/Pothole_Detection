@@ -31,14 +31,14 @@ class SignActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
+
+
         super.onCreate(savedInstanceState)
         // Initialize the correct binding for SignActivity
         binding = ActivitySignBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Load and start the pulse animation
-        val pulseAnimation = AnimationUtils.loadAnimation(this, R.anim.pulse_animation)
-        findViewById<ImageView>(R.id.safetyIcon).startAnimation(pulseAnimation)
+
 
         auth = FirebaseAuth.getInstance()
 
@@ -104,6 +104,7 @@ class SignActivity : AppCompatActivity() {
                     .show()
             } else {
                 auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+                    signInProgressBar.visibility = View.GONE
                     if (it.isSuccessful) {
                         val intent = Intent(this, MainActivity::class.java)
                         startActivity(intent)

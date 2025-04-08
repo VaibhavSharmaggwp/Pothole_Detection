@@ -16,7 +16,7 @@
     <string name="pothole_preview">Pothole preview</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
-    <string name="current_location">📍 Current Location</string>
+
     <string name="update">Update</string>
     <string name="describe_the_pothole">Describe the pothole</string>
     <string name="severity_level">Severity Level</string>
@@ -63,5 +63,25 @@
         <item>Worker</item>
     </string-array>
     <string name="title_activity_officer_compose">OfficerComposeActivity</string>
+    <string name="drive_ease">DRIVE EASE</string>
+    <string name="hi_there">Hi There!</string>
+    <string name="welcome_to_drive_ease_community_dashboard">Welcome to drive ease. Community Dashboard</string>
+    <string name="log_in_with_google">Log in with Google</string>
+    <string name="orr">or</string>
+    <string name="your_email">Your email</string>
+    <string name="drive_ease_">DRIVE EASE</string>
+    <string name="hi_there_">Hi there!</string>
+    <string name="welcome_to_drive_ease_community_dashboard_">Welcome to Drive Ease. Community Dashboard</string>
+    <string name="your_email_newui">Your email</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="sign_up_newui">Sign up</string>
+    <string name="__">|</string>
+    <string name="admin_login">Admin Login</string>
+    <string name="medium">Medium</string>
+    <string name="high">High</string>
+    <string name="location">Location....</string>
+    <string name="open_camera">Open camera</string>
+    <string name="location_not_available" />
+    <string name="enter_password">Enter password</string>
 
 </resources>

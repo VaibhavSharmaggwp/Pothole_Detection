@@ -35,7 +35,14 @@ class OfficerActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Configuration.getInstance().userAgentValue = packageName
+
+
+        // OSMDroid configuration
+        Configuration.getInstance().apply {
+            userAgentValue = packageName
+            osmdroidBasePath = cacheDir
+            osmdroidTileCache = cacheDir
+        }
         setContent {
             MaterialTheme {
                 OfficerScreen(viewModel)
@@ -213,25 +220,27 @@ fun OpenStreetMapView(reports: List<PotholeReport>, selectedReport: PotholeRepor
             },
             update = { view ->
                 view.overlays.clear()
+
+                // Safe marker creation
                 reports.forEach { report ->
-                    Marker(view).apply {
-                        position = report.latitude?.let { report.longitude?.let { it1 ->
-                            GeoPoint(it,
-                                it1
-                            )
-                        } }
-                        title = "Report #${report.id}"
-                        snippet = "${report.description}\nSeverity: ${report.severity}"
-                        setOnMarkerClickListener { _, _ -> true }
-                    }.also { view.overlays.add(it) }
+                    val lat = report.latitude
+                    val lon = report.longitude
+                    if (lat != null && lon != null && lat != 0.0 && lon != 0.0) {
+                        Marker(view).apply {
+                            position = GeoPoint(lat, lon)
+                            title = "Report #${report.id}"
+                            snippet = "${report.description}\nSeverity: ${report.severity}"
+                        }.also { view.overlays.add(it) }
+                    }
                 }
-                selectedReport?.let {
-                    view.controller.setZoom(20.0)
-                    view.controller.setCenter(it.latitude?.let { it1 -> it.longitude?.let { it2 ->
-                        GeoPoint(it1,
-                            it2
-                        )
-                    } })
+                selectedReport?.let { report ->
+                    val selectedLat = report.latitude
+                    val selectedLon = report.longitude
+                    if (selectedLat != null && selectedLon != null
+                        && selectedLat != 0.0 && selectedLon != 0.0) {
+                        view.controller.setZoom(20.0)
+                        view.controller.setCenter(GeoPoint(selectedLat, selectedLon))
+                    }
                 }
                 view.invalidate()
             },
@@ -358,4 +367,3 @@ fun PreviewFloatingActionButton() {
         FloatingActionButton(onClick = {})
     }
 }
-

@@ -105,7 +105,7 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:2.11.4")
 
     // // OSMDroid core
-    implementation("org.osmdroid:osmdroid-android:6.1.16")
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
 
     // MapsCompose for Jetpack Compose
     implementation("org.osmdroid:osmdroid-wms:6.1.16") // ✅ If you need WMS support
@@ -118,9 +118,15 @@ dependencies {
     // retrofit dependecies
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
     // new addition
     debugImplementation ("androidx.compose.ui:ui-tooling:1.5.4")
+
+    // this is new import for report admin side
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
 
 
 

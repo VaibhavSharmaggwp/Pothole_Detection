@@ -1,8 +1,10 @@
 package com.example.driveease
 
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.PropertyName
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -12,6 +14,7 @@ import java.util.Locale
 
 class OfficerViewModel : ViewModel() {
     private val database = Firebase.database
+    private val auth = FirebaseAuth.getInstance()
     private val _reports = MutableStateFlow<List<PotholeReport>>(emptyList())
     private val _roleCounts = MutableStateFlow<RoleCounts?>(null)
 
@@ -19,8 +22,10 @@ class OfficerViewModel : ViewModel() {
     val roleCounts = _roleCounts.asStateFlow()
 
     init {
-        loadReports()
-        loadRoleCounts()
+        if (auth.currentUser != null) {
+            loadReports()
+            loadRoleCounts()
+        }
     }
 
     private fun loadReports() {
@@ -78,7 +83,7 @@ class OfficerViewModel : ViewModel() {
                 "high" -> requiredWorkers += 3
                 "medium" -> requiredWorkers += 2
                 "low" -> requiredWorkers +=1
-                else -> requiredWorkers += 0 
+                else -> requiredWorkers += 0
             }
         }
         return requiredWorkers
@@ -91,8 +96,7 @@ class OfficerViewModel : ViewModel() {
 }
 
 data class RoleCounts(
-    val officers: Int = 0,
-    val sdo: Int = 0,
-    val workers: Int = 0
+    @PropertyName("Officer") val officers: Int = 0,
+    @PropertyName("Sub-divisional Officer (SDO)") val sdo: Int = 0,
+    @PropertyName("Worker") val workers: Int = 0
 )
-

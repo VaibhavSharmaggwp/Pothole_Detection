@@ -2,11 +2,14 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:elevation="8dp"
+        android:backgroundTint="?attr/colorPrimary">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
@@ -14,7 +17,11 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:title="Pothole Detection"
-            app:titleTextColor="@android:color/white" />
+            app:titleTextAppearance="@style/ToolbarTitleStyle"
+            app:titleTextColor="@android:color/white"
+            app:elevation="8dp"
+            android:paddingHorizontal="16dp"
+            app:layout_scrollFlags="scroll|enterAlways"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
@@ -27,88 +34,97 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="16dp"
+            app:cardElevation="8dp"
+            app:strokeColor="@color/material_on_surface_stroke">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="4dp">
 
                 <!-- Image Preview Section -->
-                <ImageView
-                    android:id="@+id/previewImage"
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="@string/pothole_preview" />
+                    android:layout_height="240dp"
+                    android:background="@color/material_dynamic_neutral90">
 
-                <!-- Camera Controls -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="8dp">
+                    <ImageView
+                        android:id="@+id/previewImage"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="@string/pothole_preview" />
 
-                    <com.google.android.material.button.MaterialButton
+                    <com.google.android.material.floatingactionbutton.FloatingActionButton
                         android:id="@+id/btnCamera"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="4dp"
-                        android:text="@string/camera"
-                        app:icon="@drawable/ic_camera"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnGallery"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="4dp"
-                        android:text="@string/gallery"
-                        app:icon="@drawable/ic_gallery"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-                </LinearLayout>
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="16dp"
+                        app:backgroundTint="@color/white"
+                        app:srcCompat="@drawable/ic_camera"
+                        app:tint="@color/black"
+                        app:elevation="8dp"
+                        app:borderWidth="0dp"
+                        app:rippleColor="@color/white"
+                        android:contentDescription="@string/open_camera"/>
+                </FrameLayout>
 
                 <!-- Location Section -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="8dp">
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
 
-                    <TextView
-                        android:id="@+id/tvLocation"
-                        android:layout_width="0dp"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_gravity="center_vertical"
-                        android:text="@string/current_location"
-                        android:textAppearance="?attr/textAppearanceBody2" />
+                        android:layout_marginHorizontal="12dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        app:boxStrokeColor="?attr/colorPrimary">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/tvLocation"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/location"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:inputType="none"
+                            android:focusable="false"
+                            android:clickable="false"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnUpdateLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/update"
-                        style="@style/Widget.MaterialComponents.Button.TextButton" />
+                        style="@style/Widget.MaterialComponents.Button.TextButton"
+                        android:textColor="?attr/colorPrimary"
+                        android:layout_marginStart="8dp"/>
                 </LinearLayout>
 
                 <!-- Description Input -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                    android:layout_marginHorizontal="12dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    app:boxStrokeColor="?attr/colorPrimary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etDescription"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/describe_the_pothole"
-                        android:minLines="2"
-                        android:maxLines="3" />
+                        android:inputType="textMultiLine"
+                        android:minLines="3"
+                        android:maxLines="5"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <!-- Severity Selection -->
@@ -116,51 +132,57 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="8dp">
+                    android:padding="12dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/severity_level"
-                        android:textAppearance="?attr/textAppearanceBody1"
-                        android:layout_marginBottom="4dp" />
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:layout_marginBottom="8dp"/>
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/severityChipGroup"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         app:singleSelection="true"
-                        app:selectionRequired="true">
+                        app:selectionRequired="true"
+                        app:chipSpacingHorizontal="8dp">
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chipLow"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Low"
-                            style="@style/Widget.MaterialComponents.Chip.Choice" />
+                            app:chipBackgroundColor="#008000"
+                            app:chipStrokeColor="#000000"
+                            app:checkedIconVisible="false"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"/>
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chipMedium"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Medium"
-                            style="@style/Widget.MaterialComponents.Chip.Choice" />
+                            app:chipBackgroundColor="#FFFF00"
+                            app:chipStrokeColor="#000000"
+                            app:checkedIconVisible="false"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"/>
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chipHigh"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="High"
-                            style="@style/Widget.MaterialComponents.Chip.Choice" />
+                            app:chipBackgroundColor="#FF0000 "
+                            app:chipStrokeColor="#000000"
+                            app:checkedIconVisible="false"
+                            style="@style/Widget.MaterialComponents.Chip.Choice"/>
                     </com.google.android.material.chip.ChipGroup>
                 </LinearLayout>
 
-                <!-- Space between Severity and Progress Bar -->
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp" />
-
-                <!-- Progress Bar -->
+                <!-- Progress Indicator -->
                 <com.google.android.material.progressindicator.CircularProgressIndicator
                     android:id="@+id/progressBar"
                     android:layout_width="wrap_content"
@@ -169,72 +191,59 @@
                     android:visibility="gone"
                     app:indicatorSize="56dp"
                     app:trackThickness="4dp"
-                    app:indicatorColor="@color/colorAccent"
-                    app:trackColor="@android:color/darker_gray" />
+                    app:indicatorColor="?attr/colorPrimary"
+                    app:trackColor="@color/material_dynamic_neutral80"/>
 
-                <!-- Space between Progress Bar and Buttons -->
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp" />
-
-                <!-- Buttons Container -->
-                <!-- Buttons Container -->
+                <!-- Action Buttons -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="15dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnReview"
-                        android:layout_width="0dp"
-                        android:layout_height="60dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="4dp"
-                        android:padding="12dp"
-                        android:text="@string/review_"
-                        android:textColor="@color/white"
-                        android:textSize="16sp"
-                        app:icon="@drawable/ic_review"
-                        app:iconTint="@color/white"
-                        android:textStyle="bold"
-                        app:iconGravity="textStart"
-                        app:iconPadding="8dp"
-                        android:backgroundTint="#00b4d8"
-                        app:strokeWidth="2dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        app:cornerRadius="4dp" />
+                    android:padding="16dp"
+                    android:gravity="center">
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSubmit"
                         android:layout_width="0dp"
-                        android:layout_height="60dp"
+                        android:layout_height="56dp"
                         android:layout_weight="1"
-                        android:layout_marginStart="4dp"
-                        android:textStyle="bold"
-                        android:padding="12dp"
                         android:text="@string/submit"
+                        android:textAllCaps="false"
                         android:textSize="16sp"
-                        android:backgroundTint="#00b4d8"
-                        android:textColor="@color/white"
                         app:icon="@drawable/ic_submit"
-                        app:iconTint="@color/white"
+                        app:iconTint="@android:color/white"
+                        app:cornerRadius="12dp"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:backgroundTint="?attr/colorPrimary"
+                        android:layout_marginEnd="8dp"/>
 
-                        app:iconGravity="textStart"
-                        app:iconPadding="8dp"
-                        app:cornerRadius="4dp" />
-
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnReview"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="@string/review_"
+                        android:textAllCaps="false"
+                        android:textSize="16sp"
+                        app:icon="@drawable/ic_review"
+                        app:iconTint="@android:color/white"
+                        app:cornerRadius="12dp"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:backgroundTint="?attr/colorSecondary"
+                        android:layout_marginStart="8dp"/>
                 </LinearLayout>
-
-                <!-- Optional Dimmed Background -->
-                <View
-                    android:id="@+id/dimBackground"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"
-                    android:background="@android:color/black"
-                    android:alpha="0.5"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:id="@+id/dimBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"/>
+
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

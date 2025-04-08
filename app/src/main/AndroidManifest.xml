@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!-- Camera Feature -->
+    <!-- Camera Permission -->
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" /> <!-- Internet Permission -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- Storage Permissions -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission
-        android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="32"
-        tools:ignore="ScopedStorage" /> <!-- Camera Permission -->
-    <uses-permission android:name="android.permission.CAMERA" /> <!-- Location Permissions -->
+        android:required="true" />
+
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- Internet Permission -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Location Permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -29,40 +23,26 @@
         android:theme="@style/Theme.DriveEase"
         tools:targetApi="31">
         <activity
-            android:name=".SDOScreen"
+            android:name=".AdminWorkerScreen"
             android:exported="false" />
         <activity
-            android:name=".OfficerComposeActivity"
+            android:name=".AdminReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_Reports"
+            android:exported="false" /> <!-- FileProvider for handling images -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
             android:exported="false"
-            android:label="@string/title_activity_officer_compose"
-            android:theme="@style/Theme.DriveEase" />
-        <activity
-            android:name=".OfficerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Officer_Panel"
-            android:exported="false" />
-        <activity
-            android:name=".Officer_Activity"
-            android:exported="false" />
-        <activity
-            android:name=".RoleAssignment"
-            android:exported="false" />
-        <activity
-            android:name=".AdminPanel"
-            android:exported="false" />
-        <activity
-            android:name=".Admin_SignUp"
-            android:exported="false" />
-        <activity
-            android:name=".Admin_Signin"
-            android:exported="false" />
-        <activity
-            android:name=".ReportActivity"
-            android:exported="false" /> <!-- Api key for google maps -->
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider> <!-- Google Maps API Key -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/my_map_api_key" /> <!-- Splash Screen Activity (Launcher) -->
+            android:value="@string/my_map_api_key" /> <!-- Splash Screen Activity -->
         <activity
             android:name=".SplashScrren"
             android:exported="true"
@@ -72,28 +52,41 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Sign-in Activity -->
+        </activity> <!-- Authentication Activities -->
         <activity
             android:name=".SignActivity"
-            android:exported="true" /> <!-- Sign-up Activity -->
+            android:exported="true" />
         <activity
             android:name=".SignUpActivity"
-            android:exported="false" /> <!-- Main Activity -->
+            android:exported="false" /> <!-- Main Activities -->
         <activity
             android:name=".MainActivity"
-            android:exported="true" /> <!-- Pothole Main Activity -->
+            android:exported="true" />
         <activity
             android:name=".Pothole_main"
-            android:exported="true" /> <!-- FileProvider for handling images -->
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="${applicationId}.provider"
+            android:exported="true" /> <!-- Admin Activities -->
+        <activity
+            android:name=".AdminPanel"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_SignUp"
+            android:exported="false" />
+        <activity
+            android:name=".Admin_Signin"
+            android:exported="false" /> <!-- Officer Activities -->
+        <activity
+            android:name=".OfficerActivity"
             android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-        </provider>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" /> <!-- Other Activities -->
+        <activity
+            android:name=".SDOScreen"
+            android:exported="false" />
+        <activity
+            android:name=".RoleAssignment"
+            android:exported="false" />
+        <activity
+            android:name=".ReportActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

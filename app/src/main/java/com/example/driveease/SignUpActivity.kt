@@ -27,8 +27,7 @@ class SignUpActivity : AppCompatActivity() {
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val pulseAnimation = AnimationUtils.loadAnimation(this, R.anim.pulse)
-        findViewById<ImageView>(R.id.logoImage).startAnimation(pulseAnimation)
+
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance()

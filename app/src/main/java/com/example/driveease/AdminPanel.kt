@@ -9,6 +9,7 @@ import androidx.core.view.GravityCompat
 import com.example.driveease.databinding.ActivityAdminPanelBinding
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.database.*
+import com.google.firebase.auth.FirebaseAuth
 
 class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -43,27 +44,46 @@ class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            binding.navigationView.menu.findItem(R.id.nav_dashboard).itemId -> {
-                Toast.makeText(this, "Dashboard Selected", Toast.LENGTH_SHORT).show()
-            }
-            binding.navigationView.menu.findItem(R.id.nav_officer).itemId -> {
-                startActivity(Intent(this, OfficerActivity::class.java))
-            }
-            binding.navigationView.menu.findItem(R.id.nav_sdo).itemId -> {
-                Toast.makeText(this, "SDO Selected", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, SDOScreen::class.java))
-            }
-            binding.navigationView.menu.findItem(R.id.nav_worker).itemId -> {
-                Toast.makeText(this, "Worker Selected", Toast.LENGTH_SHORT).show()
-            }
-            binding.navigationView.menu.findItem(R.id.nav_reports).itemId -> {
-                Toast.makeText(this, "Reports Selected", Toast.LENGTH_SHORT).show()
-            }
-            binding.navigationView.menu.findItem(R.id.nav_location).itemId -> {
-                Toast.makeText(this, "Location Selected", Toast.LENGTH_SHORT).show()
-            }
+        // Check if the user is authenticated
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser == null) {
+            Toast.makeText(this, "Please sign in first", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, Admin_Signin::class.java)) // Adjust to your sign-in activity
+            finish() // Close AdminPanel to prevent returning without signing in
+            return false
         }
+
+        // Handle navigation item selection with error catching
+        try {
+            when (item.itemId) {
+                binding.navigationView.menu.findItem(R.id.nav_dashboard).itemId -> {
+                    Toast.makeText(this, "Dashboard Selected", Toast.LENGTH_SHORT).show()
+                }
+                binding.navigationView.menu.findItem(R.id.nav_officer).itemId -> {
+                    Toast.makeText(this, "Officer Selected", Toast.LENGTH_LONG).show()
+                    startActivity(Intent(this, OfficerActivity::class.java))
+                }
+                binding.navigationView.menu.findItem(R.id.nav_sdo).itemId -> {
+                    Toast.makeText(this, "SDO Selected", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, SDOScreen::class.java))
+                }
+                binding.navigationView.menu.findItem(R.id.nav_worker).itemId -> {
+                    Toast.makeText(this, "Worker Selected", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, AdminWorkerScreen::class.java))
+                }
+                binding.navigationView.menu.findItem(R.id.nav_reports).itemId -> {
+                    Toast.makeText(this, "Reports Selected", Toast.LENGTH_SHORT).show()
+                }
+                binding.navigationView.menu.findItem(R.id.nav_location).itemId -> {
+                    Toast.makeText(this, "Location Selected", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: Exception) {
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            e.printStackTrace() // Log the error for debugging
+        }
+
+        // Close the drawer after selection
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
@@ -121,6 +141,7 @@ class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         startActivity(Intent(this, RoleAssignment::class.java))
         finish()
     }

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
+    <!-- Access app-specific pictures directory -->
     <external-files-path
         name="my_images"
-        path="/" />
-    <cache-path
-        name="my_cache_images"
-        path="/" />
+        path="Pictures" />
+
+    <!-- Fallback for general file access -->
+    <external-files-path
+        name="my_files"
+        path="." />
 </paths>

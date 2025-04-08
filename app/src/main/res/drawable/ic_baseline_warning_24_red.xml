@@ -3,7 +3,14 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
+
+    <!-- Main Marker Shape (Pin with Rounded Top) -->
     <path
-        android:fillColor="#FF0000"
-        android:pathData="M12,2L1,21h22L12,2zM12,6l7.53,13H4.47L12,6zM11,10v4h2v-4h-2zM11,16v2h2v-2h-2z"/>
+        android:fillColor="#D32F2F"
+        android:pathData="M12,2 C7,2 4,6 4,10 C4,15 12,22 12,22 C12,22 20,15 20,10 C20,6 17,2 12,2 Z"/>
+
+    <!-- Inner Circle (To Highlight the Center) -->
+    <path
+        android:fillColor="#ff0000"
+        android:pathData="M12,6 A4,4 0 1,1 8,10 A4,4 0 0,1 12,6 Z"/>
 </vector>
