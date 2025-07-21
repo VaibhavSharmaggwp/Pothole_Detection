@@ -16,14 +16,14 @@ class RoleAssignment : AppCompatActivity() {
     private var selectedRole: String? = null
     private var username: String? = null
     private lateinit var roleCountRef: DatabaseReference
-    private lateinit var auth: FirebaseAuth
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRoleAssignmentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        auth = FirebaseAuth.getInstance()
+
         username = intent.getStringExtra("USERNAME")
 
         // Firebase reference for role counts under admins

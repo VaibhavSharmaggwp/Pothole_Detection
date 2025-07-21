@@ -1,5 +1,7 @@
 package com.example.driveease
 
+
+
 data class PotholeReport(
     val userId: String = "",
     val userEmail: String = "",
@@ -12,5 +14,5 @@ data class PotholeReport(
     val date: String = "",    // Add separate  date field
     val time: String = "",   // Add separate time field
     val status: String = "in-progress",
-    val id: String = ""
+    val id: String = "",
 )

@@ -1,21 +1,19 @@
 package com.example.driveease
 
 data class Report(
-    var userId: String? = null,
-    var userEmail: String? = null,
-    var description: String? = null,
-    var lat: String? = null,
-    var long: String? = null,
-    var imageUrl: String? = null,
-    var timestamp: String? = null,
-    var location: String? = null
+    val id: Int,
+    val description: String?,
+    val imageUrl: String?,
+    val severity: String?,
+    val createdAt: String?,
+    val zoneName: String?,
+    val status: String?
 ) {
-    // Optional method to help in the retrieval and proper formatting of the location
     fun getFormattedLocation(): String {
-        return if (!lat.isNullOrEmpty() && !long.isNullOrEmpty()) {
-            "$lat, $long"  // Return latitude and longitude if both are available
-        } else {
-            location ?: "Location not available"  // Return the full location or a fallback message
-        }
+        return zoneName?.takeIf { it.isNotEmpty() } ?: "Location not available"
+    }
+
+    fun getFormattedTimestamp(): String {
+        return createdAt?.takeIf { it.isNotEmpty() } ?: "Date not available"
     }
 }

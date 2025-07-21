@@ -1,4 +1,53 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-  
-</selector>
+<!-- res/drawable/error.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFEBEE" /> <!-- Light red background -->
+            <corners android:radius="8dp" /> <!-- Rounded corners -->
+        </shape>
+    </item>
+    <item
+        android:width="60dp"
+        android:height="60dp"
+        android:gravity="center">
+        <shape android:shape="rectangle">
+            <solid android:color="#D32F2F" /> <!-- Red triangle background -->
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+    <item
+        android:width="40dp"
+        android:height="40dp"
+        android:gravity="center">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" /> <!-- White inner triangle -->
+            <corners android:radius="2dp" />
+        </shape>
+    </item>
+    <item
+        android:width="20dp"
+        android:height="20dp"
+        android:gravity="center">
+        <shape android:shape="oval">
+            <solid android:color="#D32F2F" /> <!-- Red exclamation mark circle -->
+        </shape>
+    </item>
+    <item
+        android:width="8dp"
+        android:height="16dp"
+        android:gravity="center"
+        android:top="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" /> <!-- White exclamation mark -->
+        </shape>
+    </item>
+    <item
+        android:width="8dp"
+        android:height="8dp"
+        android:gravity="center"
+        android:top="18dp">
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF" /> <!-- White dot for exclamation -->
+        </shape>
+    </item>
+</layer-list>

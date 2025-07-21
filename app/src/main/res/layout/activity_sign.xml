@@ -32,8 +32,6 @@
             android:textColor="#000000"
             android:textSize="24sp"
             android:textStyle="bold" />
-
-
     </LinearLayout>
 
     <!-- Greeting Section -->
@@ -63,7 +61,7 @@
             android:textSize="15sp" />
     </LinearLayout>
 
-    <!-- Sign-In Options -->
+    <!-- Sign-In Form -->
     <LinearLayout
         android:id="@+id/signInOptionsLayout"
         android:layout_width="match_parent"
@@ -71,54 +69,6 @@
         android:layout_below="@id/greetingLayout"
         android:orientation="vertical"
         android:padding="16dp">
-
-        <!-- Google Sign-In Button -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/googleSignInBtn"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:text="Log in with Google"
-            android:textColor="#000000"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            app:cornerRadius="8dp"
-            app:icon="@drawable/google_logo"
-            app:iconGravity="textStart"
-            app:iconPadding="24dp"
-            app:iconSize="20dp"
-            app:iconTint="@null"
-            android:backgroundTint="#FFFFFF"
-            app:strokeColor="#CCCCCC"
-            app:strokeWidth="1dp" />
-
-        <!-- Divider with "or" -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginVertical="16dp">
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="#CCCCCC" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="or"
-                android:textSize="20sp"
-                android:textColor="#000000"
-                android:layout_marginHorizontal="16dp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1"
-                android:background="#CCCCCC" />
-        </LinearLayout>
 
         <!-- Email Input Field -->
         <com.google.android.material.textfield.TextInputLayout
@@ -140,14 +90,14 @@
                 android:textColorHint="#999999" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Password Input Field with Forgot Password Link -->
+        <!-- Password Input Field -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/signInPasswordLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:boxBackgroundColor="#FFFFFF"
             app:boxStrokeColor="#CCCCCC"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="16dp"
             app:boxStrokeWidth="1dp"
             app:hintTextColor="#999999"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
@@ -160,19 +110,17 @@
                 android:inputType="textPassword"
                 android:textColor="#000000"
                 android:textColorHint="#999999" />
-
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Log In Button -->
         <com.google.android.material.button.MaterialButton
-
             android:id="@+id/signInBtn"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:text="Log In"
             android:textColor="#FFFFFF"
             android:textAllCaps="true"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="24dp"
             android:textSize="18sp"
             android:backgroundTint="#000000"
             app:cornerRadius="8dp" />

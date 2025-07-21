@@ -8,8 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.example.driveease.databinding.ActivityAdminPanelBinding
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.database.*
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 
 class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -24,10 +24,9 @@ class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide() // hide action bar
-        
+
         binding = ActivityAdminPanelBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
 
         setupFirebaseListeners()
         setupNavigationDrawer()
@@ -48,20 +47,21 @@ class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
         val currentUser = FirebaseAuth.getInstance().currentUser
         if (currentUser == null) {
             Toast.makeText(this, "Please sign in first", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, Admin_Signin::class.java)) // Adjust to your sign-in activity
-            finish() // Close AdminPanel to prevent returning without signing in
+            startActivity(Intent(this, Admin_Signin::class.java))
+            finish()
             return false
         }
 
-        // Handle navigation item selection with error catching
+        // Handle navigation item selection
         try {
             when (item.itemId) {
                 binding.navigationView.menu.findItem(R.id.nav_dashboard).itemId -> {
                     Toast.makeText(this, "Dashboard Selected", Toast.LENGTH_SHORT).show()
                 }
                 binding.navigationView.menu.findItem(R.id.nav_officer).itemId -> {
-                    Toast.makeText(this, "Officer Selected", Toast.LENGTH_LONG).show()
-                    startActivity(Intent(this, OfficerActivity::class.java))
+                    // Check if user has Officer role
+                    checkOfficerRole(currentUser.uid)
+                    return true // Keep drawer closed, action handled in callback
                 }
                 binding.navigationView.menu.findItem(R.id.nav_sdo).itemId -> {
                     Toast.makeText(this, "SDO Selected", Toast.LENGTH_SHORT).show()
@@ -69,7 +69,7 @@ class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
                 }
                 binding.navigationView.menu.findItem(R.id.nav_worker).itemId -> {
                     Toast.makeText(this, "Worker Selected", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, AdminWorkerScreen::class.java))
+                    startActivity(Intent(this, Worker_Activity::class.java))
                 }
                 binding.navigationView.menu.findItem(R.id.nav_reports).itemId -> {
                     Toast.makeText(this, "Reports Selected", Toast.LENGTH_SHORT).show()
@@ -80,12 +80,35 @@ class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
             }
         } catch (e: Exception) {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
-            e.printStackTrace() // Log the error for debugging
+            e.printStackTrace()
         }
 
         // Close the drawer after selection
         binding.drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun checkOfficerRole(uid: String) {
+        val adminRef = database.getReference("admins").child(uid).child("current_role")
+        adminRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val role = snapshot.getValue(String::class.java)
+                if (role == "Officer") {
+                    Toast.makeText(this@AdminPanel, "Officer Selected", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this@AdminPanel, OfficerActivity::class.java))
+                } else {
+                    Toast.makeText(
+                        this@AdminPanel,
+                        "⛔ You don't have privileges to access Officer activity",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@AdminPanel, "Error checking role: ${error.message}", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     private fun setupFirebaseListeners() {
@@ -107,17 +130,14 @@ class AdminPanel : AppCompatActivity(), NavigationView.OnNavigationItemSelectedL
         })
 
         // Listen for reports count, excluding invalid reports
-        reportsListener = reportsRef.addValueEventListener(object: ValueEventListener{
+        reportsListener = reportsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 var validCount = 0
-                for(child in snapshot.children){
-                    // Retrieve field values with default fallbacks
+                for (child in snapshot.children) {
                     val latitude = child.child("latitude").getValue(Double::class.java) ?: 0.0
                     val longitude = child.child("longitude").getValue(Double::class.java) ?: 0.0
                     val imageUrl = child.child("imageUrl").getValue(String::class.java) ?: ""
-
-                    // Check if the report is valid
-                    if(latitude != 0.0 && longitude != 0.0 && imageUrl.isNotEmpty()){
+                    if (latitude != 0.0 && longitude != 0.0 && imageUrl.isNotEmpty()) {
                         validCount++
                     }
                 }

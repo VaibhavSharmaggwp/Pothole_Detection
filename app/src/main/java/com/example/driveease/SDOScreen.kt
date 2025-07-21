@@ -34,10 +34,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -62,20 +59,20 @@ data class Task(
     val address: String = "",
     val date: String = "",
     val time: String = "",
-    val status: String = "in-progress",
+    val status: String = "pending",
     val progress: Int = 0,
-    val workers: List<String> = emptyList()
+    val completedPhotoUrl: String? = null,
+    val workers: List<String> = emptyList() // List of worker UIDs
 )
 
 data class Worker(
     val name: String = "",
+    val uid: String = "", // Changed from email to uid for consistency with Firebase UID
     val status: String = "available",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0,
     val currentTask: String? = null
 )
-
-
 
 // ViewModel
 class SDOViewModel : ViewModel() {
@@ -85,64 +82,89 @@ class SDOViewModel : ViewModel() {
     private val _workers = MutableLiveData<List<Worker>>()
     val workers: LiveData<List<Worker>> = _workers
 
+    // Map to convert worker UIDs to names for display
+    private val _workerUidToName = MutableLiveData<Map<String, String>>()
+    val workerUidToName: LiveData<Map<String, String>> = _workerUidToName
+
     private val database = FirebaseDatabase.getInstance()
+    private val potholeReportsRef = database.getReference("pothole_reports")
+    private val workersRef = database.getReference("admins/rolesAssigned/Worker")
+
+    private var isListening = false
 
     init {
         fetchData()
     }
 
     private fun fetchData() {
-        val workersRef = database.getReference("admins/rolesAssigned/Worker")
+        if (isListening) return
+        isListening = true
+
+        // Fetch workers from "admins/rolesAssigned/Worker"
         workersRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val workersList = mutableListOf<Worker>()
                 for (child in snapshot.children) {
                     val name = child.child("name").getValue(String::class.java) ?: ""
+                    val uid = child.key ?: "" // UID is the key in Firebase
                     val lat = child.child("latitude").getValue(Double::class.java) ?: 0.0
                     val lon = child.child("longitude").getValue(Double::class.java) ?: 0.0
                     workersList.add(
                         Worker(
                             name = name,
+                            uid = uid,
                             status = "available",
                             latitude = lat,
                             longitude = lon
                         )
                     )
                 }
-                println("Fetched ${workersList.size} workers")
-                assignTasks(workersList)
+                _workers.value = workersList
+                // Create UID-to-name map for UI display
+                _workerUidToName.value = workersList.associate { it.uid to it.name }
+                fetchTasks()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                println("Error fetching workers: ${error.message}")
                 _workers.value = emptyList()
+                _workerUidToName.value = emptyMap()
             }
         })
     }
 
-    private fun assignTasks(availableWorkers: List<Worker>) {
-        val potholeReportsRef = database.getReference("pothole_reports")
+    private fun fetchTasks() {
         potholeReportsRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val potholeReports = mutableListOf<PotholeReport>()
+                val tasksList = mutableListOf<Task>()
                 for (report in snapshot.children) {
                     try {
-                        val potholeReport = report.getValue(PotholeReport::class.java)
-                        if (potholeReport != null &&
-                            potholeReport.latitude != 0.0 &&
-                            potholeReport.longitude != 0.0 &&
-                            !potholeReport.imageUrl.isNullOrEmpty()
-                        ) {
-                            potholeReports.add(potholeReport)
+                        val task = Task(
+                            id = report.key ?: "",
+                            userId = report.child("userId").getValue(String::class.java) ?: "",
+                            userEmail = report.child("userEmail").getValue(String::class.java) ?: "",
+                            imageUrl = report.child("imageUrl").getValue(String::class.java) ?: "",
+                            description = report.child("description").getValue(String::class.java) ?: "",
+                            severity = report.child("severity").getValue(String::class.java) ?: "low",
+                            latitude = report.child("latitude").getValue(Double::class.java) ?: 0.0,
+                            longitude = report.child("longitude").getValue(Double::class.java) ?: 0.0,
+                            address = report.child("address").getValue(String::class.java) ?: "",
+                            date = report.child("date").getValue(String::class.java) ?: "",
+                            time = report.child("time").getValue(String::class.java) ?: "",
+                            status = report.child("status").getValue(String::class.java) ?: "pending",
+                            progress = report.child("progress").getValue(Int::class.java) ?: 0,
+                            workers = report.child("workerAssigned").children.mapNotNull {
+                                it.getValue(String::class.java)
+                            } // Worker UIDs
+                        )
+                        if (task.latitude != 0.0 && task.longitude != 0.0 && task.imageUrl.isNotEmpty()) {
+                            tasksList.add(task)
                         }
                     } catch (e: Exception) {
                         println("Error processing report ${report.key}: ${e.message}")
                     }
                 }
-
-                // Sort potholeReports by severity (High > Medium > Low)
-                val sortedPotholeReports = potholeReports.sortedWith(
-                    compareByDescending<PotholeReport> {
+                _tasks.value = tasksList.sortedWith(
+                    compareByDescending<Task> {
                         when (it.severity) {
                             "High" -> 2
                             "Medium" -> 1
@@ -150,81 +172,81 @@ class SDOViewModel : ViewModel() {
                         }
                     }.thenBy { it.date }
                 )
-
-                val tasksList = mutableListOf<Task>()
-                val workersList = availableWorkers.toMutableList()
-
-                for (potholeReport in sortedPotholeReports) {
-                    val workersNeeded = when (potholeReport.severity) {
-                        "High" -> 3
-                        "Medium" -> 2
-                        else -> 1
-                    }
-
-                    val assignedWorkers = mutableListOf<String>()
-                    val availableWorkersNow = workersList.filter { it.status == "available" }
-
-                    val assignableWorkers = availableWorkersNow.take(workersNeeded)
-                    for (worker in assignableWorkers) {
-                        assignedWorkers.add(worker.name)
-                        val workerIndex = workersList.indexOf(worker)
-                        workersList[workerIndex] = worker.copy(
-                            status = "busy",
-                            currentTask = potholeReport.id
-                        )
-                    }
-
-                    val taskProgress = if (assignedWorkers.size == workersNeeded) {
-                        kotlin.random.Random.nextInt(10, 100)
-                    } else {
-                        0
-                    }
-
-                    tasksList.add(
-                        Task(
-                            id = potholeReport.id ?: "",
-                            userId = potholeReport.userId ?: "",
-                            userEmail = potholeReport.userEmail ?: "",
-                            imageUrl = potholeReport.imageUrl ?: "",
-                            description = potholeReport.description ?: "",
-                            severity = potholeReport.severity ?: "low",
-                            latitude = potholeReport.latitude ?: 0.0,
-                            longitude = potholeReport.longitude ?: 0.0,
-                            address = potholeReport.address ?: "",
-                            date = potholeReport.date ?: "",
-                            time = potholeReport.time ?: "",
-                            status = if (assignedWorkers.isNotEmpty()) "in-progress" else "pending",
-                            progress = taskProgress,
-                            workers = assignedWorkers
-                        )
-                    )
-                }
-                println("Fetched ${tasksList.size} tasks")
-                _tasks.value = tasksList
-                _workers.value = workersList
+                assignWorkersToPendingTasks()
             }
 
             override fun onCancelled(error: DatabaseError) {
-                println("Error fetching pothole reports: ${error.message}")
                 _tasks.value = emptyList()
             }
         })
     }
 
+    private fun assignWorkersToPendingTasks() {
+        val currentTasks = _tasks.value?.toMutableList() ?: return
+        val currentWorkers = _workers.value?.toMutableList() ?: return
+
+        val pendingTasks = currentTasks.filter { it.status == "pending" && it.workers.isEmpty() }
+            .sortedWith(
+                compareByDescending<Task> {
+                    when (it.severity) {
+                        "High" -> 2
+                        "Medium" -> 1
+                        else -> 0
+                    }
+                }.thenBy { it.date }
+            )
+
+        for (task in pendingTasks) {
+            val workersNeeded = 1 // Only one worker per task
+            val availableWorkers = currentWorkers.filter { it.status == "available" }
+            if (availableWorkers.isNotEmpty()) {
+                val assignableWorker = availableWorkers.first()
+                val assignedWorkerUid = listOf(assignableWorker.uid)
+
+                // Update task in Firebase with worker UID and currently_working
+                potholeReportsRef.child(task.id).updateChildren(
+                    mapOf(
+                        "workerAssigned" to assignedWorkerUid,
+                        "currently_working" to assignableWorker.uid, // Track current worker
+                        "status" to "in-progress",
+                        "progress" to 0
+                    )
+                )
+
+                // Update local task
+                val taskIndex = currentTasks.indexOf(task)
+                currentTasks[taskIndex] = task.copy(
+                    status = "in-progress",
+                    progress = 0,
+                    workers = assignedWorkerUid
+                )
+
+                // Mark worker as busy
+                val workerIndex = currentWorkers.indexOf(assignableWorker)
+                currentWorkers[workerIndex] = assignableWorker.copy(
+                    status = "busy",
+                    currentTask = task.id
+                )
+            }
+        }
+
+        _tasks.value = currentTasks
+        _workers.value = currentWorkers
+    }
+
     fun updateTaskProgress(taskId: String, newProgress: Int) {
-        val currentTasks = _tasks.value?.toMutableList() ?: mutableListOf()
+        val currentTasks = _tasks.value?.toMutableList() ?: return
         val taskIndex = currentTasks.indexOfFirst { it.id == taskId }
         if (taskIndex != -1) {
-            val updatedTask = currentTasks[taskIndex].copy(
-                progress = newProgress.coerceIn(0, 100)
-            )
+            val updatedTask = currentTasks[taskIndex].copy(progress = newProgress.coerceIn(0, 100))
             currentTasks[taskIndex] = updatedTask
             _tasks.value = currentTasks
+            potholeReportsRef.child(taskId).child("progress").setValue(newProgress)
         }
     }
 
     fun markTaskCompleted(taskId: String) {
-        val currentTasks = _tasks.value?.toMutableList() ?: mutableListOf()
+        val currentTasks = _tasks.value?.toMutableList() ?: return
         val taskIndex = currentTasks.indexOfFirst { it.id == taskId }
         if (taskIndex != -1) {
             val updatedTask = currentTasks[taskIndex].copy(
@@ -234,7 +256,17 @@ class SDOViewModel : ViewModel() {
             currentTasks[taskIndex] = updatedTask
             _tasks.value = currentTasks
 
-            val currentWorkers = _workers.value?.toMutableList() ?: mutableListOf()
+            // Update Firebase
+            potholeReportsRef.child(taskId).updateChildren(
+                mapOf(
+                    "status" to "completed",
+                    "progress" to 100,
+                    "currently_working" to null // Clear currently_working when completed
+                )
+            )
+
+            // Free up worker
+            val currentWorkers = _workers.value?.toMutableList() ?: return
             currentWorkers.forEachIndexed { index, worker ->
                 if (worker.currentTask == taskId) {
                     currentWorkers[index] = worker.copy(
@@ -245,55 +277,14 @@ class SDOViewModel : ViewModel() {
             }
             _workers.value = currentWorkers
 
-            // Reassign available workers to pending tasks
+            // Reassign available workers to new tasks
             assignWorkersToPendingTasks()
         }
     }
 
-    private fun assignWorkersToPendingTasks() {
-        val currentTasks = _tasks.value?.toMutableList() ?: return
-        val currentWorkers = _workers.value?.toMutableList() ?: return
-
-        val pendingTasks = currentTasks.filter { it.status == "pending" }.sortedWith(
-            compareByDescending<Task> {
-                when (it.severity) {
-                    "High" -> 2
-                    "Medium" -> 1
-                    else -> 0
-                }
-            }.thenBy { it.date }
-        )
-
-        for (task in pendingTasks) {
-            val workersNeeded = when (task.severity) {
-                "High" -> 3
-                "Medium" -> 2
-                else -> 1
-            }
-
-            val availableWorkers = currentWorkers.filter { it.status == "available" }
-            val assignableWorkers = availableWorkers.take(workersNeeded)
-            if (assignableWorkers.isNotEmpty()) {
-                val assignedWorkerNames = assignableWorkers.map { it.name }
-                val taskIndex = currentTasks.indexOf(task)
-                currentTasks[taskIndex] = task.copy(
-                    status = "in-progress",
-                    progress = if (assignableWorkers.size == workersNeeded) kotlin.random.Random.nextInt(10, 100) else 0,
-                    workers = assignedWorkerNames
-                )
-
-                assignableWorkers.forEach { worker ->
-                    val workerIndex = currentWorkers.indexOf(worker)
-                    currentWorkers[workerIndex] = worker.copy(
-                        status = "busy",
-                        currentTask = task.id
-                    )
-                }
-            }
-        }
-
-        _tasks.value = currentTasks
-        _workers.value = currentWorkers
+    override fun onCleared() {
+        isListening = false
+        super.onCleared()
     }
 }
 
@@ -356,8 +347,9 @@ class SDOScreen : ComponentActivity() {
 @Composable
 fun SDOComposeUI() {
     val viewModel: SDOViewModel = viewModel()
-    val tasks by viewModel.tasks.observeAsState(initial = emptyList())
-    val workers by viewModel.workers.observeAsState(initial = emptyList())
+    val tasks by viewModel.tasks.observeAsState(emptyList())
+    val workers by viewModel.workers.observeAsState(emptyList())
+    val workerUidToName by viewModel.workerUidToName.observeAsState(emptyMap())
     var selectedTaskId by remember { mutableStateOf<String?>(null) }
     var taskClickCount by remember { mutableIntStateOf(0) }
 
@@ -366,8 +358,8 @@ fun SDOComposeUI() {
             TopAppBar(
                 title = {
                     Text(
-                        "DriveEase - SDO Work Management",
-                        style = MaterialTheme.typography.displayMedium,
+                        "DriveEase - SDO Dashboard",
+                        style = MaterialTheme.typography.titleMedium,
                         color = Color.White
                     )
                 },
@@ -425,6 +417,7 @@ fun SDOComposeUI() {
             TaskList(
                 tasks = tasks,
                 viewModel = viewModel,
+                workerUidToName = workerUidToName,
                 selectedTaskId = selectedTaskId,
                 onTaskClick = { taskId ->
                     selectedTaskId = taskId
@@ -462,20 +455,28 @@ fun StatsOverview(tasks: List<Task>, workers: List<Worker>) {
 
 @Composable
 fun StatItem(title: String, value: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(8.dp)
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .width(100.dp),
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Text(
-            text = value,
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.primary
-        )
-        Text(
-            text = title,
-            style = MaterialTheme.typography.bodySmall,
-            color = Color.Gray
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(12.dp)
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
+        }
     }
 }
 
@@ -505,7 +506,7 @@ fun MapContainer(
             val task = marker.relatedObject as? Task
             task?.let {
                 val intent = Intent(context, AdminReportActivity::class.java).apply {
-                    putExtra("TASK_ID", it.userId)
+                    putExtra("TASK_ID", it.id)
                 }
                 context.startActivity(intent)
                 return true
@@ -516,7 +517,7 @@ fun MapContainer(
 
     LaunchedEffect(selectedTaskId, taskClickCount) {
         if (selectedTaskId != null) {
-            tasks.find { it.userId == selectedTaskId }?.let { task ->
+            tasks.find { it.id == selectedTaskId }?.let { task ->
                 if (task.latitude != 0.0 && task.longitude != 0.0) {
                     mapView.controller.animateTo(
                         GeoPoint(task.latitude, task.longitude),
@@ -527,8 +528,10 @@ fun MapContainer(
             }
         } else {
             val allPoints = mutableListOf<GeoPoint>().apply {
-                addAll(tasks.filter { it.latitude != 0.0 && it.longitude != 0.0 }.map { GeoPoint(it.latitude, it.longitude) })
-                addAll(workers.filter { it.latitude != 0.0 && it.longitude != 0.0 }.map { GeoPoint(it.latitude, it.longitude) })
+                addAll(tasks.filter { it.latitude != 0.0 && it.longitude != 0.0 }
+                    .map { GeoPoint(it.latitude, it.longitude) })
+                addAll(workers.filter { it.latitude != 0.0 && it.longitude != 0.0 }
+                    .map { GeoPoint(it.latitude, it.longitude) })
             }
             if (allPoints.isNotEmpty()) {
                 val boundingBox = org.osmdroid.util.BoundingBox(
@@ -585,6 +588,7 @@ fun MapContainer(
 fun TaskList(
     tasks: List<Task>,
     viewModel: SDOViewModel,
+    workerUidToName: Map<String, String>, // Added to map UIDs to names
     selectedTaskId: String?,
     onTaskClick: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -647,8 +651,9 @@ fun TaskList(
                     TaskItem(
                         task = task,
                         viewModel = viewModel,
-                        isSelected = task.userId == selectedTaskId,
-                        onClick = { onTaskClick(task.userId) }
+                        workerUidToName = workerUidToName,
+                        isSelected = task.id == selectedTaskId,
+                        onClick = { onTaskClick(task.id) }
                     )
                 }
             }
@@ -665,6 +670,7 @@ fun TaskList(
                     TaskItem(
                         task = task,
                         viewModel = viewModel,
+                        workerUidToName = workerUidToName,
                         isSelected = task.id == selectedTaskId,
                         onClick = { onTaskClick(if (task.id == selectedTaskId) "" else task.id) }
                     )
@@ -695,6 +701,7 @@ fun TaskList(
 fun TaskItem(
     task: Task,
     viewModel: SDOViewModel,
+    workerUidToName: Map<String, String>, // Added to display worker names
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -720,7 +727,7 @@ fun TaskItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Task #${task.userId}",
+                    "Task #${task.id}",
                     style = MaterialTheme.typography.headlineLarge
                 )
                 Box(
@@ -736,21 +743,23 @@ fun TaskItem(
                 }
             }
             Text(
-                text = task.address.ifEmpty { "Location coordinates: ${"%.4f".format(task.latitude)}, ${"%.4f".format(task.longitude)}" },
+                text = task.address.ifEmpty { "Coordinates: ${"%.4f".format(task.latitude)}, ${"%.4f".format(task.longitude)}" },
                 style = MaterialTheme.typography.bodyLarge
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            val timeout = 8
+            Spacer(modifier = Modifier.height(timeout.dp))
 
+            // Display worker name instead of UID
             if (task.workers.isNotEmpty()) {
+                val workerNames = task.workers.mapNotNull { workerUidToName[it] }.joinToString(", ")
                 Text(
-                    "Assigned Workers: ${task.workers.joinToString(", ")}",
-                    style = MaterialTheme.typography
-                            .bodySmall,
+                    "Assigned Worker: $workerNames",
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
             } else {
                 Text(
-                    "No workers assigned",
+                    "No worker assigned",
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.Gray
                 )
@@ -765,7 +774,8 @@ fun TaskItem(
                     progress = task.progress / 100f,
                     modifier = Modifier
                         .weight(1f)
-                        .height(10.dp),
+                        .height(10.dp)
+                        .clip(RoundedCornerShape(5.dp)),
                     color = getProgressColor(task.progress),
                     trackColor = Color.LightGray
                 )
@@ -782,10 +792,11 @@ fun TaskItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
-                    onClick = { viewModel.updateTaskProgress(task.id, task.progress + 10) },
+                    onClick = { viewModel.updateTaskProgress(task.id, (task.progress + 10).coerceAtMost(100)) },
                     modifier = Modifier.weight(1f),
                     shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
+                    enabled = task.status != "completed"
                 ) {
                     Text("+10%", style = MaterialTheme.typography.labelLarge, color = Color.White)
                 }
@@ -793,7 +804,8 @@ fun TaskItem(
                     onClick = { viewModel.markTaskCompleted(task.id) },
                     modifier = Modifier.weight(1f),
                     shape = MaterialTheme.shapes.medium,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    enabled = task.status != "completed"
                 ) {
                     Text("Mark Completed", style = MaterialTheme.typography.labelLarge, color = Color.White)
                 }
@@ -811,19 +823,18 @@ fun TaskItem(
 
 // Utility Functions
 fun getSeverityColor(severity: String): Color {
-    return when (severity) {
-        "High" -> Color.Red
-        "Medium" -> Color(0xFFFFA500)
-        "Low" -> Color.Green
+    return when (severity.lowercase()) {
+        "high" -> Color(0xFFE74C3C)
+        "medium" -> Color(0xFFF39C12)
+        "low" -> Color(0xFF2ECC71)
         else -> Color.Gray
     }
 }
 
 fun getProgressColor(progress: Int): Color {
     return when {
-        progress < 30 -> Color.Red
-        progress < 60 -> Color.Yellow
-        progress < 90 -> Color(0xFF27AE60)
-        else -> Color.Green
+        progress < 30 -> Color(0xFFF39C12)
+        progress < 60 -> Color(0xFF3498DB)
+        else -> Color(0xFF2ECC71)
     }
 }

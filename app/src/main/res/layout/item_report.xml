@@ -58,7 +58,7 @@
                 android:layout_marginBottom="12dp"
                 android:background="#E0E0E0"/>
 
-            <!-- Location with icon -->
+            <!-- Zone Name with icon -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,14 +73,14 @@
                     app:srcCompat="@drawable/ic_location" />
 
                 <TextView
-                    android:id="@+id/location"
+                    android:id="@+id/zoneName"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="#1976D2"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    tools:text="Latitude: 12.3456, Longitude: 78.9012" />
+                    tools:text="Zone: Manipal University Jaipur" />
             </LinearLayout>
 
             <!-- DateTime with icon -->
@@ -106,10 +106,10 @@
                     android:textColor="#1976D2"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    tools:text="Reported on: July 20, 2023 14:30" />
+                    tools:text="Reported on: 2025-04-12 11:50:43" />
             </LinearLayout>
 
-            <!-- User Email (New) -->
+            <!-- Severity with icon -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -122,17 +122,43 @@
                     android:layout_height="20dp"
                     android:layout_marginEnd="12dp"
                     app:tint="#1976D2"
-                    app:srcCompat="@drawable/ic_email" />
+                    app:srcCompat="@drawable/ic_severity" />
 
                 <TextView
-                    android:id="@+id/userEmail"
+                    android:id="@+id/severity"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:textColor="#1976D2"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    tools:text="user@example.com" />
+                    tools:text="Severity: High" />
+            </LinearLayout>
+
+            <!-- Status with icon -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginEnd="12dp"
+                    app:tint="#1976D2"
+                    app:srcCompat="@drawable/ic_status" />
+
+                <TextView
+                    android:id="@+id/status"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textColor="#1976D2"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    tools:text="Status: Pending" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

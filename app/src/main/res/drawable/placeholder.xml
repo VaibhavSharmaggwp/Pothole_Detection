@@ -1,4 +1,44 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-  
-</selector>
+<!-- res/drawable/error.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFCDD2" /> <!-- Light red background -->
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+    <item
+        android:width="60dp"
+        android:height="60dp"
+        android:gravity="center">
+        <shape android:shape="rectangle">
+            <solid android:color="#D32F2F" /> <!-- Red X shape -->
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+    <item
+        android:width="40dp"
+        android:height="40dp"
+        android:gravity="center">
+        <rotate
+            android:fromDegrees="45"
+            android:pivotX="50%"
+            android:pivotY="50%">
+            <shape android:shape="rectangle">
+                <solid android:color="#FFFFFF" /> <!-- White X -->
+            </shape>
+        </rotate>
+    </item>
+    <item
+        android:width="40dp"
+        android:height="40dp"
+        android:gravity="center">
+        <rotate
+            android:fromDegrees="-45"
+            android:pivotX="50%"
+            android:pivotY="50%">
+            <shape android:shape="rectangle">
+                <solid android:color="#FFFFFF" /> <!-- White X -->
+            </shape>
+        </rotate>
+    </item>
+</layer-list>

@@ -1,6 +1,5 @@
 package com.example.driveease
 
-import ReportsDiffCallback
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
@@ -35,29 +34,30 @@ class ReportsAdapter : RecyclerView.Adapter<ReportsAdapter.ReportViewHolder>() {
 
     class ReportViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val reportImage: ImageView = itemView.findViewById(R.id.reportImage)
-        private val location: TextView = itemView.findViewById(R.id.location)
         private val dateTime: TextView = itemView.findViewById(R.id.dateTime)
         private val description: TextView = itemView.findViewById(R.id.description)
-        private val userEmail: TextView = itemView.findViewById(R.id.userEmail)
+        private val severity: TextView = itemView.findViewById(R.id.severity)
+        private val status: TextView = itemView.findViewById(R.id.status)
+        private val zoneName: TextView = itemView.findViewById(R.id.zoneName)
 
         @SuppressLint("SetTextI18n")
         fun bind(report: Report) {
-            // Set description
-            description.text = report.description ?: "No description available"
+            // Description
+            description.text = report.description?.takeIf { it.isNotEmpty() } ?: "No description available"
 
-            // Get formatted location using getFormattedLocation function
-            val formattedLocation = report.getFormattedLocation()
+            // Zone Name (Location)
+            zoneName.text = "Zone: ${report.getFormattedLocation()}"
 
-            // Set location: If the formatted location is null or empty, fallback to a default message
-            location.text = "Location: ${formattedLocation.takeIf { it.isNotEmpty() } ?: "Location not available"}"
+            // Timestamp
+            dateTime.text = "Reported on: ${report.getFormattedTimestamp()}"
 
-            // Set timestamp
-            dateTime.text = "Reported on: ${report.timestamp ?: "Date not available"}"
+            // Severity
+            severity.text = "Severity: ${report.severity?.takeIf { it.isNotEmpty() } ?: "Not specified"}"
 
-            // Set user email
-            userEmail.text = "Reported by: ${report.userEmail ?: "Unknown user"}"
+            // Status
+            status.text = "Status: ${report.status?.takeIf { it.isNotEmpty() } ?: "Unknown"}"
 
-            // Load image with error handling
+            // Image
             if (!report.imageUrl.isNullOrEmpty()) {
                 Glide.with(reportImage.context)
                     .load(report.imageUrl)

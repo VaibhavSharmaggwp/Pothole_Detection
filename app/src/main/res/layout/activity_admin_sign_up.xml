@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/road_background_gradient"
+    android:background="#FFFFFF"
     tools:context=".Admin_SignUp">
 
+    <!-- Progress Bar -->
     <ProgressBar
         android:id="@+id/adminSignUpProgressBar"
         android:layout_width="50dp"
@@ -15,202 +16,206 @@
         android:theme="@style/MyProgressBar"
         android:visibility="gone" />
 
+    <!-- Header with Logo -->
+    <LinearLayout
+        android:id="@+id/adminHeaderLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+
+
+    </LinearLayout>
+
+    <!-- Greeting Section -->
+    <LinearLayout
+        android:id="@+id/adminGreetingLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/adminHeaderLayout"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Admin Account"
+            android:textColor="#000000"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Join the admin community"
+            android:textColor="#666666"
+            android:textSize="16sp"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
+
+    <!-- Form Section -->
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/adminGreetingLayout"
+        android:layout_above="@id/adminBottomSignInContainer"
         android:fillViewport="true">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/adminSignUpFormLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <LinearLayout
-                android:id="@+id/adminHeaderLayout"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/adminSignUpNameLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp"
-                android:gravity="center">
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#CCCCCC"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="#999999"
+                app:startIconDrawable="@drawable/ic_person"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                <ImageView
-                    android:id="@+id/adminLogoImage"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:src="@drawable/admin_logo"
-                    android:layout_marginBottom="16dp"
-                    android:layout_centerHorizontal="true" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/welcome_admin_sign_up"
-                    android:textColor="#FFFFFF"
-                    android:textSize="32sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/sign_up_to_continue_admin"
-                    android:textColor="#E0E0E0"
-                    android:textSize="20sp"
-                    android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/adminHeaderLayout"
-                android:layout_above="@id/adminBottomSignInContainer"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="#FFFFFF">
-
-                <ScrollView
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/adminSignUpName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fillViewport="true">
+                    android:hint="@string/full_name"
+                    android:inputType="textPersonName"
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="24dp">
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/adminSignUpNameLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            app:startIconDrawable="@drawable/ic_person"
-                            app:startIconTint="@color/colorPrimary"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/adminSignUpName"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="@string/full_name"
-                                android:inputType="textPersonName"
-                                android:textColor="#000000" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/adminSignUpEmailLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            app:startIconDrawable="@drawable/ic_email"
-                            app:startIconTint="@color/colorPrimary"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/adminSignUpEmail"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Email Address"
-                                android:inputType="textEmailAddress"
-                                android:textColor="#000000" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/adminSignUpPhoneLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            app:startIconDrawable="@drawable/ic_phone"
-                            app:startIconTint="@color/colorPrimary"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/adminSignUpPhone"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Phone Number"
-                                android:inputType="phone"
-                                android:textColor="#000000" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/adminSignUpPasswordLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            app:passwordToggleEnabled="true"
-                            app:startIconDrawable="@drawable/ic_lock"
-                            app:startIconTint="@color/colorPrimary"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/adminSignUpPassword"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Password"
-                                android:inputType="textPassword"
-                                android:textColor="#000000" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/adminSignUpCPasswordLayout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="5dp"
-                            app:passwordToggleEnabled="true"
-                            app:startIconDrawable="@drawable/ic_lock"
-                            app:startIconTint="@color/colorPrimary"
-                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/adminSignUpCPassword"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:hint="Confirm Password"
-                                android:inputType="textPassword"
-                                android:textColor="#000000" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/adminSignUpBtn"
-                            android:layout_width="match_parent"
-                            android:layout_height="56dp"
-                            android:text="@string/sign_up_admin__"
-                            android:textAllCaps="false"
-                            android:textSize="16sp"
-                            app:cornerRadius="28dp"
-                            app:elevation="4dp" />
-                    </LinearLayout>
-                </ScrollView>
-            </com.google.android.material.card.MaterialCardView>
-
-            <LinearLayout
-                android:id="@+id/adminBottomSignInContainer"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/adminSignUpEmailLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_alignParentBottom="true"
-                android:layout_marginBottom="24dp"
-                android:gravity="center">
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#CCCCCC"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="#999999"
+                app:startIconDrawable="@drawable/ic_email"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/adminSignUpEmail"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Already have an account?"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:textColor="#FFFFFF" />
+                    android:hint="Email Address"
+                    android:inputType="textEmailAddress"
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-                <TextView
-                    android:id="@+id/adminSignInText"
-                    android:layout_width="wrap_content"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/adminSignUpPhoneLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#CCCCCC"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="#999999"
+                app:startIconDrawable="@drawable/ic_phone"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/adminSignUpPhone"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sign In"
-                    android:textColor="#FFD700"
-                    android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:layout_marginStart="8dp" />
-            </LinearLayout>
-        </RelativeLayout>
+                    android:hint="Phone Number"
+                    android:inputType="phone"
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/adminSignUpPasswordLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#CCCCCC"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="#999999"
+                app:startIconDrawable="@drawable/ic_lock"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/adminSignUpPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Password"
+                    android:inputType="textPassword"
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/adminSignUpCPasswordLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#CCCCCC"
+                app:boxStrokeWidth="1dp"
+                app:hintTextColor="#999999"
+                app:startIconDrawable="@drawable/ic_lock"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/adminSignUpCPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Confirm Password"
+                    android:inputType="textPassword"
+                    android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/adminSignUpBtn"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="@string/sign_up_admin__"
+                android:textColor="#FFFFFF"
+                android:textAllCaps="true"
+                android:textSize="18sp"
+                android:backgroundTint="#000000"
+                app:cornerRadius="8dp"
+                android:elevation="4dp"
+                android:layout_marginTop="16dp" />
+        </LinearLayout>
     </ScrollView>
+
+    <!-- Bottom Sign-In Section -->
+    <LinearLayout
+        android:id="@+id/adminBottomSignInContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Already have an account?"
+            android:textColor="#000000"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/adminSignInText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign In"
+            android:textColor="#0000FF"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginStart="4dp" />
+    </LinearLayout>
 </RelativeLayout>

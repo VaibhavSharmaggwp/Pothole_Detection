@@ -1,4 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-  
-</selector>
+<!-- res/drawable/error_image.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Background rectangle with rounded corners -->
+    <path
+        android:pathData="M4,4H20V20H4V4Z"
+        android:strokeWidth="1"
+        android:strokeColor="#EF5350"
+        android:fillColor="#FFEBEE"/>
+    <!-- Warning triangle -->
+    <path
+        android:pathData="M12,7L18,17H6L12,7Z"
+        android:fillColor="#D32F2F"/>
+    <!-- Exclamation mark -->
+    <path
+        android:pathData="M12,10V13M12,15H12.01"
+        android:strokeWidth="1"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"/>
+</vector>

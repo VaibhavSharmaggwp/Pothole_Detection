@@ -1,4 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-
-</selector>
+<!-- res/drawable/placeholder_image.xml -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Background rectangle with rounded corners -->
+    <path
+        android:pathData="M4,4H20V20H4V4Z"
+        android:strokeWidth="1"
+        android:strokeColor="#B0BEC5"
+        android:fillColor="#ECEFF1"/>
+    <!-- Image icon (simplified camera) -->
+    <path
+        android:pathData="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8Z"
+        android:fillColor="#78909C"/>
+    <!-- Loading dot in the center -->
+    <path
+        android:pathData="M12,12m-1,0a1,1 0 1,1 2,0a1,1 0 1,1 -2,0"
+        android:fillColor="#455A64"/>
+</vector>

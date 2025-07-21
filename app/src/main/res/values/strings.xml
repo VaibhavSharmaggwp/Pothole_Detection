@@ -27,7 +27,7 @@
     <string name="send_otp" />
     <string name="sign_in_with_phone">Sign in with Phone</string>
     <string name="enter_phone_number">Enter Phone Number</string>
-    <string name="my_map_api_key">AIzaSyBFB-f15GLir-GZ67PfwDHx1fZw3W1Ep8Q</string>
+    <string name="my_map_api_key">YOUR_API_KEY_HERE</string>
     <string name="submit_report">Submit Report</string>
     <string name="review" />
     <string name="review_">Review</string>
